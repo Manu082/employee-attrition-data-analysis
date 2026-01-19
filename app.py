@@ -1,7 +1,7 @@
 # app.py
 # --------------------------------------------------
 # Employee Attrition Analysis - HR Analytics Dashboard
-# (PIPELINE SAFE | POWER BI STYLE)
+# (PIPELINE SAFE | POWER BI STYLE | STREAMLIT CLOUD READY)
 # --------------------------------------------------
 
 import streamlit as st
@@ -9,22 +9,33 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-# -----------------------------
-# Load PIPELINE (ONLY ONE ARTIFACT)
-# -----------------------------
-pipeline = joblib.load("models/attrition_pipeline.pkl")
+# ==================================================
+# BASE DIRECTORY (STREAMLIT SAFE PATH HANDLING)
+# ==================================================
+BASE_DIR = os.path.dirname(__file__)
 
-raw_df = pd.read_csv("data/processed/cleaned_hr_data.csv")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "attrition_pipeline.pkl")
+DATA_PATH = os.path.join(BASE_DIR, "data", "processed", "cleaned_hr_data.csv")
 
-# -----------------------------
-# Page config
-# -----------------------------
-st.set_page_config(page_title="Employee Attrition Analysis", layout="wide")
+# ==================================================
+# LOAD MODEL PIPELINE & DATA
+# ==================================================
+pipeline = joblib.load(MODEL_PATH)
+raw_df = pd.read_csv(DATA_PATH)
 
-# -----------------------------
-# Power BI–style UI
-# -----------------------------
+# ==================================================
+# PAGE CONFIG
+# ==================================================
+st.set_page_config(
+    page_title="Employee Attrition Analysis",
+    layout="wide"
+)
+
+# ==================================================
+# POWER BI–STYLE UI
+# ==================================================
 st.markdown("""
 <style>
 h1, h2, h3 {
@@ -46,7 +57,7 @@ tab1, tab2, tab3 = st.tabs(
 )
 
 # ==================================================
-# TAB 1: KPI SECTION
+# TAB 1: HR KPIs
 # ==================================================
 with tab1:
     st.subheader("📊 HR KPIs")
@@ -69,7 +80,7 @@ with tab1:
     )
 
 # ==================================================
-# TAB 2: PREDICTION UI (NO FEATURE MISMATCH)
+# TAB 2: ATTRITION PREDICTION
 # ==================================================
 with tab2:
     st.subheader("🧾 Employee Attrition Prediction")
@@ -125,7 +136,7 @@ with tab2:
     job_satisfaction = st.slider("Job Satisfaction (1–4)", 1, 4, 3)
 
     # --------------------------------------------------
-    # RAW FEATURE ROW (PIPELINE HANDLES EVERYTHING)
+    # INPUT DATAFRAME (PIPELINE HANDLES ALL TRANSFORMS)
     # --------------------------------------------------
     input_df = pd.DataFrame([{
         "Age": age,
@@ -158,7 +169,7 @@ with tab2:
             st.error("🔴 High Attrition Risk")
 
 # ==================================================
-# TAB 3: HR ANALYTICS (POWER BI STYLE GRAPHS)
+# TAB 3: HR ANALYTICS (POWER BI STYLE)
 # ==================================================
 with tab3:
     st.subheader("📈 HR Analytics Insights")
